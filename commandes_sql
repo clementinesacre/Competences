@@ -1,0 +1,72 @@
+# socket_family = AF_INET ou AF_UNIX
+# socket_type = SOCK_STREAM ou SOCK_DGRAM
+# s = socket.socket (socket_family, socket_type, protocol=0)
+# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+
+user : admin
+password : 123
+
+code ISO 3166-1 alpha-2 utilisé pour les id_pays
+
+
+
+PAYS :
+CREATE TABLE pays (
+    id_pays VARCHAR(10) NOT NULL,
+    nom_pays VARCHAR(30) NOT NULL,
+
+    CONSTRAINT pk_pays PRIMARY KEY(id_pays)
+) ;
+INSERT INTO pays(id_pays, nom_pays)
+VALUES
+('BE', 'Belgique'),
+('DE', 'Allemagne'),
+('FR', 'France'),
+('ES', 'Espagne'),
+('IT','Italie');
+
+
+
+
+
+
+ANCIEN CODE test :
+    VILLE :
+    CREATE TABLE villes (
+        Postal INTEGER NOT NULL,
+        Ville VARCHAR(30) NOT NULL,
+
+        CONSTRAINT pk_villes PRIMARY KEY(Postal)
+    ) ;
+
+    PERSONNE :
+    CREATE TABLE utilisateurs (
+        ID INTEGER NOT NULL DEFAULT AUTOINCREMENT,
+        Nom VARCHAR(30) NOT NULL,
+        Prenom VARCHAR(30) NOT NULL,
+        Age INTEGER NOT NULL,
+        Postal INTEGER NOT NULL,
+
+        CONSTRAINT pk_utilisateurs PRIMARY KEY (ID),
+        CONSTRAINT pk_utilisateurs_villes FOREIGN KEY (Postal) REFERENCES villes (Postal)
+    ) ;
+
+
+
+    INSERT INTO villes(Postal, Ville)
+    VALUES
+    (1000, 'Bruxelles'),
+    (5000, 'Namur'),
+    (4000, 'Liege'),
+    (3000, 'Leuven'),
+    (2000,'Anvers');
+
+
+    INSERT INTO utilisateurs(Nom, Prenom, Age, Postal)
+    VALUES
+    ('Petit', 'Jean', 15, 3000),
+    ('Lambert', 'Marc', 22, 1000),
+    ('Fontaine', 'Louise', 18, 4000),
+    ('Durand', 'Marie', 17, 1000),
+    ('Morel', 'Lucie', 18, 2000);

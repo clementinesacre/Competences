@@ -1,5 +1,5 @@
 import socket
-import time
+from os import getenv
 
 
 def server_function():
@@ -23,6 +23,7 @@ def server_function():
         data = conn.recv(1024).decode()
         if data == "coucou":
             new_data = "donnees"
+
 
         # envoie de la réponse
         conn.send(new_data.encode())
