@@ -12,9 +12,10 @@ def client_function(information):
     # envoi de la question
     mySocket.send(information.encode())
 
-    # réception de la réponse
+    # réception de la réponse sous forme de string --> on la transforme en dico
     data = mySocket.recv(1024).decode()
-    print('Received from server: ' + data)
+    data_dico = dict(eval(str(data)))
+    print('Received from server: ',  data_dico)
 
     # fermeture de la connexion
     mySocket.close()
@@ -22,6 +23,8 @@ def client_function(information):
 
 msg = input("entre : ")
 client_function(msg)
+
+
 
 """def client_function():
     print()

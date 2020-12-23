@@ -1,8 +1,14 @@
 import sqlite3
 
 
-def creation_db(nom_db):
-    connexion = sqlite3.connect(nom_db)
+def creation_db():
+    """
+    Permet de créer des tableaux dans la base de données 'tlca.db'.
+
+    PRE : -
+    POST : Crée le tableau et lui donne des valeurs.
+    """
+    connexion = sqlite3.connect("../db/tlca.db")
 
     connexion.execute(''' CREATE TABLE pays(
         id_pays VARCHAR(10) NOT NULL,
@@ -22,24 +28,16 @@ def creation_db(nom_db):
     connexion.close()
 
 
-def suppression_tableaux(nom_db) :
-    connexion = sqlite3.connect(nom_db)
+def suppression_tableau(nom_tableau):
+    """
+    Permet de supprimer un tableau dans la base de données 'tlca.db'.
 
-    connexion.execute('''DROP TABLE pays''')
+    PRE : 'nom_tableau' est le nom du tableau à supprimer.
+    POST : Supprime le tableau de la db.
+    """
+    connexion = sqlite3.connect("../db/tlca.db")
 
+    connexion.execute('''DROP TABLE ''' + nom_tableau)
 
-def afficher_db(nom_db):
-    connexion = sqlite3.connect(nom_db)
-
-    donnees = connexion.execute("SELECT * from pays")
-    for colonne in donnees:
-        print("ID = ", colonne[0])
-        print("PAYS = ", colonne[1], "\n")
-    print(donnees)
-
-    connexion.close()
-
-
-#creation_db("../db/tlca.db")
-#suppression_tableaux("../db/tlca.db")
-afficher_db("../db/tlca.db")
+# creation_db()
+# suppression_tableau("pays")

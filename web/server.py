@@ -1,5 +1,6 @@
 import socket
 from os import getenv
+from creation_db import utilisation_db as ud
 
 
 def server_function():
@@ -22,8 +23,7 @@ def server_function():
         # réception de la question
         data = conn.recv(1024).decode()
         if data == "coucou":
-            new_data = "donnees"
-
+            new_data = str(ud.afficher_db())
 
         # envoie de la réponse
         conn.send(new_data.encode())
