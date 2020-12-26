@@ -26,7 +26,7 @@ def server_function():
             new_data = str(ud.afficher_pays_db())
 
         elif "pays" in data:
-            new_data = str(ud.informations_un_pays(data[5:]))
+            new_data = str(ud.info_pays(data[5:]))
 
         # envoie de la réponse
         conn.send(new_data.encode())
