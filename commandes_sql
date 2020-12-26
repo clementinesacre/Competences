@@ -27,6 +27,28 @@ VALUES
 ('IT','Italie');
 
 
+INFO PAYS :
+CREATE TABLE infoPays(
+    id_pays VARCHAR(10) NOT NULL,
+    coordonnee VARCHAR(30) NOT NULL,
+    habitants_2020 INTEGER NOT NULL,
+    superficie FLOAT NOT NULL,
+    densite INTEGER NOT NULL,
+
+    CONSTRAINT pk_infoPays_pays FOREIGN KEY(id_pays) REFERENCES pays (id_pays)
+);
+
+INSERT INTO infoPays(id_pays, coordonnee, habitants_2020, superficie, densite)
+VALUES
+('BE', '50° 51′ N, 4° 21′ E', 11476279, 30688, 374),
+('DE', '52° 31′ N, 13° 25′ E', 83149300, 357386, 233),
+('FR', '48° 52′ N, 2° 19,59′ E', 67848156, 632734, 107.2),
+('ES', '40° 26′ N, 3° 42′ O', 46934632,	505911, 93),
+('IT', '41° 53′ N, 12° 29′ E', 60359546, 301336, 200);
+
+
+
+
 
 
 

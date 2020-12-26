@@ -26,10 +26,20 @@ def informations_un_pays(nom_pays):
         "JOIN pays on infoPays.id_pays=pays.id_pays where infoPays.id_pays = '" + nom_pays + "';")
 
     donnees = {}
-    for colonne in sql:  # colonne = tuple
+    for colonne in sql:
         donnees[colonne[0]] = {"nom": colonne[1], "coordonee": colonne[2], "habitants_2020": colonne[3],
                                "superficie": colonne[4], "densite": colonne[5]}
     connexion.close()
     return donnees
 
+
+def info_pays(lettres):
+    connexion = sqlite3.connect("../db/tlca.db")
+
+    sql = connexion.execute("SELECT * from pays where nom_pays like '" + lettres + "%'")
+    donnees = {}
+    for colonne in sql:
+        donnees[colonne[0]] = colonne[1]
+    connexion.close()
+    return donnees
 
