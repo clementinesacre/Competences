@@ -28,6 +28,9 @@ def server_function():
         elif "pays" in data:
             new_data = str(ud.info_pays(data[5:]))
 
+        elif "type" in data:
+            new_data = str(ud.pays_comparaison_type(data[5:].split()))
+
         # envoie de la réponse
         conn.send(new_data.encode())
 

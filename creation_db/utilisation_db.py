@@ -43,3 +43,22 @@ def info_pays(lettres):
     connexion.close()
     return donnees
 
+
+def pays_comparaison_type(pays):
+    connexion = sqlite3.connect("../db/tlca.db")
+
+    sql = connexion.execute("SELECT pays.id_pays, nom_pays, " + pays[4] +
+                            " FROM infoPays JOIN pays ON infoPays.id_pays = pays.id_pays WHERE pays.nom_pays = '"
+                            + pays[0] + "' or pays.nom_pays = '" + pays[1] + "' " "or pays.nom_pays = '" + pays[2] +
+                            "' or pays.nom_pays = '" + pays[3] + "';")
+    donnees = {}
+    for colonne in sql:
+        if "habitants_2020" in pays[4] or "superficie" in pays[4]:
+            donnees[colonne[0]] = {"nom_pays": colonne[1], "info": colonne[2], "densite": colonne[3]}
+        else:
+            donnees[colonne[0]] = {"nom_pays": colonne[1], "info": colonne[2]}
+    connexion.close()
+    return donnees
+
+
+#print(pays_comparaison_type(['Belgique', 'Brésil', 'Allemagne', "''", 'habitants_2020, densite']))

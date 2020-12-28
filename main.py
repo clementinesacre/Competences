@@ -11,7 +11,3 @@ if __name__ == '__main__':
     """server.server_function()
     client.client_function()
     #client.client_function()"""
-
-
-
-
