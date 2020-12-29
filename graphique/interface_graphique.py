@@ -52,6 +52,7 @@ class Graphique:
         self.__liste_label_selection = ["", "", "", ""]
         self.__bouton_lancer_comparaison = tk.Button()
         self.__pays_choisi = tk.Label()
+        self.__aucun_pays = tk.Label()
 
         self.__pays1 = tk.LabelFrame()
         self.__pays2 = tk.LabelFrame()
@@ -66,7 +67,7 @@ class Graphique:
         self.__bouton_comparer_coordonnees = tk.Button()
         self.__choix_comparaison = tk.Label()
         self.__liste_type_comparaison = [self.__choix_comparaison, self.__bouton_comparer_habitants,
-                                         self.__bouton_comparer_superficie, self.__bouton_comparer_superficie]
+                                         self.__bouton_comparer_superficie, self.__bouton_comparer_coordonnees]
 
         self.__titre_pays = tk.Label()
         self.__pays_donnees = tk.Label()
@@ -126,10 +127,11 @@ class Graphique:
                                                    fg=c_ecriture, bd=1, activebackground=c_ecriture,
                                                    activeforeground=c_bouton_principal, font=police_base,
                                                    cursor=mouse, command=lambda: self.comparer_pays())
-        self.__button_ajouter_pays = tk.Button(self.__racine, text="Ajouter un pays", height=2, width=16, bg=c_bouton_principal,
-                                       fg=c_ecriture, bd=1, activebackground=c_ecriture,
-                                       activeforeground=c_bouton_principal, cursor=mouse,
-                                       command=lambda: self.creer_pays(), font=police_base)
+        self.__button_ajouter_pays = tk.Button(self.__racine, text="Ajouter un pays", height=2, width=16,
+                                               bg=c_bouton_principal,
+                                               fg=c_ecriture, bd=1, activebackground=c_ecriture,
+                                               activeforeground=c_bouton_principal, cursor=mouse,
+                                               command=lambda: self.creer_pays(), font=police_base)
         self.__button_menu_comparaison.place(x=275, y=250)
         self.__button_ajouter_pays.place(x=275, y=350)
 
@@ -160,7 +162,7 @@ class Graphique:
 
         value = tk.StringVar()
         value.set("")
-        self.__entree_utilisateur = tk.Entry(show=None, textvariable=value, font=police_base, width=15)
+        self.__entree_utilisateur = tk.Entry(show=None, textvariable=value, font=police_base, width=16)
         self.__entree_utilisateur.place(x=12, y=60)
 
         self.__liste_labelframe = [self.__pays1, self.__pays2, self.__pays3, self.__pays4, self.__barre_recherche,
@@ -176,13 +178,24 @@ class Graphique:
         pays_correspondants = sorted(list(user.un_pays(lettres).values()))
         var = tk.StringVar(value=pays_correspondants)
         self.__lb.destroy()
-        self.__lb = tk.Listbox(self.__racine, listvariable=var, selectmode='extended')
+        affichage_pays = (len(pays_correspondants), 10)[len(pays_correspondants) > 10]
+        self.__lb = tk.Listbox(self.__racine, listvariable=var, selectmode='single', height=affichage_pays,
+                               width=29, bd=0, selectbackground=c_bouton_principal)
 
         if lettres == "":
             self.__lb.destroy()
+            self.__aucun_pays.destroy()
         else:
-            self.__lb.place(x=12, y=86)
-            self.__lb.bind('<<ListboxSelect>>', lambda x: self.afficher_pays_choisi())
+            if len(pays_correspondants) == 0:
+                self.__lb.destroy()
+                self.__aucun_pays = tk.Label(self.__racine, text="Aucun résultat", bg=c_bg_principal, height=1,
+                                             width=10, fg=c_ecriture, anchor='w', font=('Helvitiva', 11),
+                                             justify="left")
+                self.__aucun_pays.place(x=12, y=87)
+            else:
+                self.__aucun_pays.destroy()
+                self.__lb.place(x=13, y=87)
+                self.__lb.bind('<<ListboxSelect>>', lambda x: self.afficher_pays_choisi())
 
     def afficher_pays_choisi(self):
         if len(self.__lb.curselection()) > 0:
@@ -265,18 +278,6 @@ class Graphique:
     def type_comparaison(self):
         copie = list(self.__liste_pays_selectionnes)
         self.remise_a_zero()
-        """nbr_pays_choisis = 4 - self.__liste_pays_selectionnes.count("")
-        for i in range(nbr_pays_choisis):
-            self.__liste_label_selection[i][0].destroy()
-            self.__liste_label_selection[i][1].destroy()
-            self.__bouton_lancer_comparaison.destroy()
-        self.__pays1.destroy()
-        self.__pays2.destroy()
-        self.__pays3.destroy()
-        self.__pays4.destroy()
-        self.__barre_recherche.destroy()
-        self.__entree_utilisateur.destroy()
-        self.__lb.destroy()"""
         self.__liste_pays_selectionnes = list(copie)
 
         self.__choix_comparaison = tk.Label(self.__racine, text="Types de comparaisons :", bg=c_bg_principal,
@@ -306,10 +307,9 @@ class Graphique:
                                          self.__bouton_comparer_superficie, self.__bouton_comparer_coordonnees]
 
     def comparaison_finale(self, type):
-        self.__choix_comparaison.destroy()
-        self.__bouton_comparer_habitants.destroy()
-        self.__bouton_comparer_superficie.destroy()
-        self.__bouton_comparer_coordonnees.destroy()
+        copie = list(self.__liste_pays_selectionnes)
+        self.remise_a_zero()
+        self.__liste_pays_selectionnes = list(copie)
 
         if type == "habitants":
             self.comparaison_habitants()
@@ -431,8 +431,7 @@ class Graphique:
         return numero_place
 
     def creer_pays(self):
-        self.__button_menu_comparaison.destroy()
-        self.__button_ajouter_pays.destroy()
+        self.remise_a_zero()
 
         #################################
         self.__ajout_pays_id_entry = tk.Entry(show=None, textvariable="1", font=police_base, width=15)
@@ -507,7 +506,6 @@ class Graphique:
                 info.destroy()
 
         nbr_carres_corrects = 0
-
         ##
         if self.__ajout_pays_id_entry.get().isalpha() and self.__ajout_pays_id_entry.get().upper() not in \
                 user.tous_pays() and len(self.__ajout_pays_id_entry.get()) == 2:
@@ -625,7 +623,7 @@ class Graphique:
         self.creer_pays()
 
     def remise_a_zero(self):
-        #Widget menu
+        # Widget menu
         self.__button_menu_comparaison.destroy()
         self.__button_ajouter_pays.destroy()
 
@@ -639,6 +637,8 @@ class Graphique:
         for widget in self.__liste_labelframe:
             widget.destroy()
         self.__lb.destroy()
+        self.__aucun_pays.destroy()
+
         for widget in self.__liste_type_comparaison:
             widget.destroy()
         for widget in self.__liste_widgets_pays_compare:
