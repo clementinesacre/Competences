@@ -1,5 +1,6 @@
 from web import client as cl
 from math import cos, sin, acos, pi
+import re
 
 
 def tous_pays():
@@ -74,7 +75,7 @@ def distance_coordonnees(pays1, pays2):
     return round(delta * 6378.0, 3)
 
 
-def format_coordoonnees(coord):
+def format_coordonnees(coord):
     valeurs = ""
     format_final = []
     for caractere in coord:
@@ -88,3 +89,42 @@ def format_coordoonnees(coord):
             valeurs += caractere
     format_final.append(valeurs)
     return format_final
+
+
+def verif_coordonnees(coord):
+    donnees = coord.split()
+    vertical = "NS"
+    horizontal = "EOW"
+    try:
+        if donnees[0].isnumeric() and donnees[1].isnumeric() and donnees[2].isalpha() and donnees[3].isnumeric() and \
+                donnees[4].isnumeric() and donnees[5].isalpha():
+            if donnees[2] in vertical and donnees[5] in horizontal:
+                return True
+    except:
+        return False
+    return False
+
+
+# print(verif_coordonnees('50 51 N 4 2 O'))
+
+def ajout_pays_client(id, nom, coo, hab, sup, dens):
+    cl.client_function("creation " + id + "  " + nom + "  " + coo + "  " + str(hab) + "  " + str(sup) + "  " +
+                       str(dens))
+
+
+def format_nom_pays(nom):
+    pays_reformate = "_".join(re.split("[' -]", nom))
+
+    booleen = True
+    index = -1
+    while booleen:
+        if pays_reformate[index] == "_":
+            index -= 1
+        else:
+            booleen = False
+
+    if index != -1:
+        return pays_reformate[:index + 1]
+    else:
+        return pays_reformate
+

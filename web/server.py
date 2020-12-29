@@ -12,7 +12,7 @@ def server_function():
     mySocket.bind((host, port))
 
     # boucle pour écouter en permanence et ne pas s'arrêter
-    new_data = {}
+    new_data = ""
     while True:
         # écoute sur le port 5001
         mySocket.listen(1)
@@ -30,6 +30,10 @@ def server_function():
 
         elif "type" in data:
             new_data = str(ud.pays_comparaison_type(data[5:].split()))
+
+        elif "creation" in data:
+            ud.ajout_pays(data[9:].split("  "))
+            new_data = str({0: "ok"})
 
         # envoie de la réponse
         conn.send(new_data.encode())
