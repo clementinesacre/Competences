@@ -1,6 +1,4 @@
 import tkinter as tk
-from creation_db import utilisation_db as udb
-from web import client
 from web import user
 import re
 
@@ -225,7 +223,8 @@ class Graphique:
         pour en mettre un autre. A partir de 2 pays sélectionnés, le bouton de comparaison apparait et il est possible
         de comparer les pays sélectionnés.
         """
-        if len(self.__lb.curselection()) > 0 and self.__liste_pays_selectionnes.count("") > 0:
+        if len(self.__lb.curselection()) > 0 and self.__liste_pays_selectionnes.count("") > 0 \
+                and self.__lb.get(self.__lb.curselection()[0]) not in self.__liste_pays_selectionnes:
             pays_selectionne = self.__lb.curselection()[0]
             index = self.__liste_pays_selectionnes.index("")
 
@@ -609,6 +608,9 @@ class Graphique:
             self.ajouter_pays(self.__liste_info_nv_pays[0][0].get().upper(), nom_pays, string,
                               self.__liste_info_nv_pays[3][0].get(), self.__liste_info_nv_pays[4][0].get(),
                               self.__liste_info_nv_pays[5][0].get())
+
+            self.remise_a_zero()
+            self.initialisation()
 
     def ajouter_pays(self, id: str, nom: str, coo: str, hab: int, sup: int, dens: float) -> None:
         """

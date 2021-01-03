@@ -64,7 +64,7 @@ def coordonnees_affichage_4_pays(indice: int) -> Tuple[int, int]:
     return x, y
 
 
-def tri(donnees: dict, cle: int) -> list:
+def tri(donnees: dict, cle: str) -> list:
     """
     Permet de trier des données d'un dictionnaire selon un paramètre.
 
