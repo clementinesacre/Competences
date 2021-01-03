@@ -1,7 +1,7 @@
 import sqlite3
 
 
-def creation_db():
+def creation_db() -> None:
     """
     Permet de créer des tableaux dans la base de données 'tlca.db'.
 
@@ -77,7 +77,7 @@ def creation_db():
     connexion.close()
 
 
-def suppression_tableau(nom_tableau):
+def suppression_tableau(nom_tableau: str) -> None:
     """
     Permet de supprimer un tableau dans la base de données 'tlca.db'.
 

@@ -1,9 +1,15 @@
 import socket
-from os import getenv
 from creation_db import utilisation_db as ud
 
 
-def server_function():
+def server_function() -> None:
+    """
+    Permet d'agir en tant que serveur et de répondre à des demandes de client.
+
+    PRE : -
+    POST : Selon le message reçu (sous forme de string), la fonction renvoie une string contenant certaines
+    informations..
+    """
     host = "127.0.0.1"
     port = 5001
 
@@ -43,34 +49,3 @@ def server_function():
 
 
 server_function()
-
-"""def server_function():
-    host = "127.0.0.1"
-    port = 5001
-
-    mySocket = socket.socket()
-    mySocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    mySocket.bind((host, port))
-
-    mySocket.listen(1)
-
-    conn, addr = mySocket.accept()
-    print("Connection from: " + str(addr))
-
-    print("test clem")
-    while True:
-        data = conn.recv(1024).decode()
-        if not data:
-            break
-        print("from connected  user: " + str(data))
-
-        data = str(data).upper()
-        print("Received from User: " + str(data))
-
-        data = input(" ? ")
-        conn.send(data.encode())
-
-    conn.close()
-
-
-server_function()"""

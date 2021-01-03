@@ -17,22 +17,21 @@ police_base = ('Helvitiva', 15)
 
 
 class Graphique:
-    def __init__(self):
+    def __init__(self) -> None:
+        """
+        Instancie tous les widgets / paramètres utiles pour le bon fonctionnement de l'application
+
+        PRE : -
+        POST : Appelle la fonction suivante ; self.initialisation().
+        """
         self.__racine = tk.Tk(className='projet')
         self.__canv = tk.Canvas(self.__racine, bg=c_bg_principal, height=700, width=725)
         self.__canv.pack()
-
-        # à supprimer à terme
-        def donothing():
-            filewin = tk.Toplevel(self.__racine)
-            button = tk.Button(filewin, text="Do nothing button")
-            button.pack()
 
         # création et installation du menu de navigation
         menubar = tk.Menu(self.__racine)
         filemenu = tk.Menu(menubar, tearoff=0)
         filemenu.add_command(label="Menu principal", command=lambda: self.menu_principal())
-        # filemenu.add_command(label="Menu principal", command=lambda: self.remise_a_zero())
         filemenu.add_command(label="Comparer", command=lambda: self.menu_comparer())
         filemenu.add_command(label="Modifier", command=lambda: self.menu_modifier())
         filemenu.add_separator()
@@ -80,6 +79,8 @@ class Graphique:
         self.__dessin = tk.Canvas()
 
         # Modifier
+        self.__ajout_pays_info_entry = tk.Entry()
+        self.__ajout_pays_info_label = tk.Label()
         self.__ajout_pays_nom_entry = tk.Entry()
         self.__ajout_pays_nom_label = tk.Label()
         self.__ajout_pays_id_entry = tk.Entry()
@@ -121,7 +122,13 @@ class Graphique:
 
         self.initialisation()
 
-    def initialisation(self):
+    def initialisation(self) -> None:
+        """
+        Crée et place les boutons du menu principal.
+
+        PRE : -
+        POST : Crée les boutons 'comparer' et 'ajouter' et lance également la boucle de l'application.
+        """
         self.__button_menu_comparaison = tk.Button(self.__racine, text="Comparer des pays", height=2, width=16,
                                                    bg=c_bouton_principal,
                                                    fg=c_ecriture, bd=1, activebackground=c_ecriture,
@@ -137,7 +144,13 @@ class Graphique:
 
         self.__racine.mainloop()
 
-    def comparer_pays(self):
+    def comparer_pays(self) -> None:
+        """
+        Permet de choisir les pays que l'on souhaite comparer, via une zone de texte accessible par l'utilisateur.
+
+        PRE : -
+        POST : Appelle une autre fonction, à chaque fois que l'utilisateur change la zone de texte.
+        """
         self.remise_a_zero()
 
         width_lf = 200
@@ -168,13 +181,19 @@ class Graphique:
         self.__liste_labelframe = [self.__pays1, self.__pays2, self.__pays3, self.__pays4, self.__barre_recherche,
                                    self.__entree_utilisateur]
 
-        def on_change(a, b, c):
+        def on_change(a, b, c) -> None:
             value.get()
             self.afficher_liste_pays(self.__entree_utilisateur.get())
 
         value.trace('w', on_change)
 
-    def afficher_liste_pays(self, lettres):
+    def afficher_liste_pays(self, lettres: str) -> None:
+        """
+        Crée et place la liste déroulante en affichant les pays, selon les lettres entrées par l'utilisateur.
+
+        PRE : 'lettres' est une string.
+        POST : Affiche soit les pays correspondants aux lettres, soit un message précisant qu'aucun pays ne correspond.
+        """
         pays_correspondants = sorted(list(user.un_pays(lettres).values()))
         var = tk.StringVar(value=pays_correspondants)
         self.__lb.destroy()
@@ -197,66 +216,29 @@ class Graphique:
                 self.__lb.place(x=13, y=87)
                 self.__lb.bind('<<ListboxSelect>>', lambda x: self.afficher_pays_choisi())
 
-    def afficher_pays_choisi(self):
-        if len(self.__lb.curselection()) > 0:
+    def afficher_pays_choisi(self) -> None:
+        """
+        Affiche les pays sélectionnés par l'utilisateur.
+
+        PRE : -
+        POST : Place le nom des pays dans la case adéquate ainsi qu'un bouton permettant de supprimer le pays choisi
+        pour en mettre un autre. A partir de 2 pays sélectionnés, le bouton de comparaison apparait et il est possible
+        de comparer les pays sélectionnés.
+        """
+        if len(self.__lb.curselection()) > 0 and self.__liste_pays_selectionnes.count("") > 0:
             pays_selectionne = self.__lb.curselection()[0]
+            index = self.__liste_pays_selectionnes.index("")
 
-            if self.__liste_pays_selectionnes[0] == "":
-                self.__liste_pays_selectionnes[0] = self.__lb.get(pays_selectionne)
-                self.__pays_choisi = tk.Label(self.__racine, text=self.__lb.get(pays_selectionne), bg=c_ecriture,
-                                              height=1, width=13, fg=c_ligne_label_frame, font=police_base)
-                self.__pays_choisi.place(x=25 + position_x_pays_place, y=55)
-                self.__bouton_retirer = tk.Button(self.__racine, text="Supprimer", activeforeground=c_bouton_principal,
-                                                  height=1, width=12, bg=c_bouton_principal, fg=c_ecriture, bd=1,
-                                                  activebackground=c_ecriture, cursor=mouse, font=('Helvitiva', 10),
-                                                  command=lambda: self.retirer_choix(0))
-                self.__bouton_retirer.place(x=position_x_pays_place + 7, y=98)
-                self.__liste_label_selection[0] = [self.__pays_choisi, self.__bouton_retirer]
-
-            elif self.__liste_pays_selectionnes[1] == "":
-                self.__liste_pays_selectionnes[1] = self.__lb.get(pays_selectionne)
-                self.__pays_choisi = tk.Label(self.__racine, text=self.__lb.get(pays_selectionne), bg=c_ecriture,
-                                              height=1,
-                                              width=13, fg=c_ligne_label_frame, font=police_base)
-                self.__pays_choisi.place(x=25 + position_x_pays_place, y=55 + 1 * espace_y_pays_place)
-                self.__bouton_retirer = tk.Button(self.__racine, text="Supprimer", height=1, width=12,
-                                                  bg=c_bouton_principal, fg=c_ecriture, bd=1,
-                                                  activebackground=c_ecriture,
-                                                  activeforeground=c_bouton_principal,
-                                                  cursor=mouse, font=('Helvitiva', 10),
-                                                  command=lambda: self.retirer_choix(1))
-                self.__bouton_retirer.place(x=position_x_pays_place + 7, y=98 + 1 * espace_y_pays_place)
-                self.__liste_label_selection[1] = [self.__pays_choisi, self.__bouton_retirer]
-
-            elif self.__liste_pays_selectionnes[2] == "":
-                self.__liste_pays_selectionnes[2] = self.__lb.get(pays_selectionne)
-                self.__pays_choisi = tk.Label(self.__racine, text=self.__lb.get(pays_selectionne), bg=c_ecriture,
-                                              height=1,
-                                              width=13, fg=c_ligne_label_frame, font=police_base)
-                self.__pays_choisi.place(x=25 + position_x_pays_place, y=55 + 2 * espace_y_pays_place)
-                self.__bouton_retirer = tk.Button(self.__racine, text="Supprimer", height=1, width=12,
-                                                  bg=c_bouton_principal, fg=c_ecriture, bd=1,
-                                                  activebackground=c_ecriture,
-                                                  activeforeground=c_bouton_principal,
-                                                  cursor=mouse, font=('Helvitiva', 10),
-                                                  command=lambda: self.retirer_choix(2))
-                self.__bouton_retirer.place(x=position_x_pays_place + 7, y=98 + 2 * espace_y_pays_place)
-                self.__liste_label_selection[2] = [self.__pays_choisi, self.__bouton_retirer]
-
-            elif self.__liste_pays_selectionnes[3] == "":
-                self.__liste_pays_selectionnes[3] = self.__lb.get(pays_selectionne)
-                self.__pays_choisi = tk.Label(self.__racine, text=self.__lb.get(pays_selectionne), bg=c_ecriture,
-                                              height=1,
-                                              width=13, fg=c_ligne_label_frame, font=police_base)
-                self.__pays_choisi.place(x=25 + position_x_pays_place, y=55 + 3 * espace_y_pays_place)
-                self.__bouton_retirer = tk.Button(self.__racine, text="Supprimer", height=1, width=12,
-                                                  bg=c_bouton_principal, fg=c_ecriture, bd=1,
-                                                  activebackground=c_ecriture,
-                                                  activeforeground=c_bouton_principal,
-                                                  cursor=mouse, font=('Helvitiva', 10),
-                                                  command=lambda: self.retirer_choix(3))
-                self.__bouton_retirer.place(x=position_x_pays_place + 7, y=98 + 3 * espace_y_pays_place)
-                self.__liste_label_selection[3] = [self.__pays_choisi, self.__bouton_retirer]
+            self.__liste_pays_selectionnes[index] = self.__lb.get(pays_selectionne)
+            self.__pays_choisi = tk.Label(self.__racine, text=self.__lb.get(pays_selectionne), bg=c_ecriture,
+                                          height=1, width=13, fg=c_ligne_label_frame, font=police_base)
+            self.__pays_choisi.place(x=25 + position_x_pays_place, y=55 + index * espace_y_pays_place)
+            self.__bouton_retirer = tk.Button(self.__racine, text="Supprimer", activeforeground=c_bouton_principal,
+                                              height=1, width=12, bg=c_bouton_principal, fg=c_ecriture, bd=1,
+                                              activebackground=c_ecriture, cursor=mouse, font=('Helvitiva', 10),
+                                              command=lambda: self.retirer_choix(index))
+            self.__bouton_retirer.place(x=position_x_pays_place + 7, y=98 + index * espace_y_pays_place)
+            self.__liste_label_selection[index] = [self.__pays_choisi, self.__bouton_retirer]
 
             if self.__liste_pays_selectionnes.count("") <= 2:
                 self.__bouton_lancer_comparaison.destroy()
@@ -267,7 +249,13 @@ class Graphique:
                                                              command=lambda: self.type_comparaison())
                 self.__bouton_lancer_comparaison.place(x=580, y=550)
 
-    def retirer_choix(self, indice):
+    def retirer_choix(self, indice: int) -> None:
+        """
+        Permet de supprimer le choix de l'utilisateur.
+
+        PRE : 'indice' est un entier et représente l'indice du pays voulant être supprimé, il se trouve entre 0 et 3.
+        POST : Selon le nombre de pays choisi restant, le bouton de comparaison reste (minimum 2 pays) ou est supprimé.
+        """
         self.__liste_label_selection[indice][0].destroy()
         self.__liste_label_selection[indice][1].destroy()
         self.__liste_label_selection[indice] = ""
@@ -275,7 +263,13 @@ class Graphique:
         if self.__liste_pays_selectionnes.count("") > 2:
             self.__bouton_lancer_comparaison.destroy()
 
-    def type_comparaison(self):
+    def type_comparaison(self) -> None:
+        """
+        Permet de choisir le type sur lequel on va se baser pour comparer les pays sélectionnés.
+
+        PRE : -
+        POST : Crée et place 3 boutons avec les 3 types (nbr_habitants, superficie, coordonnées).
+        """
         copie = list(self.__liste_pays_selectionnes)
         self.remise_a_zero()
         self.__liste_pays_selectionnes = list(copie)
@@ -306,7 +300,13 @@ class Graphique:
         self.__liste_type_comparaison = [self.__choix_comparaison, self.__bouton_comparer_habitants,
                                          self.__bouton_comparer_superficie, self.__bouton_comparer_coordonnees]
 
-    def comparaison_finale(self, type):
+    def comparaison_finale(self, type: str) -> None:
+        """
+        Appelle la fonction adéquate selon le type de comparaison voulue.
+
+        PRE : 'type' est une string, ayant comme valeur soit 'habitants', 'superficie', ou soit 'distance'.
+        POST : Appelle la fonction adéquate.
+        """
         copie = list(self.__liste_pays_selectionnes)
         self.remise_a_zero()
         self.__liste_pays_selectionnes = list(copie)
@@ -318,7 +318,14 @@ class Graphique:
         elif type == "distance":
             self.comparaison_distance()
 
-    def comparaison_habitants(self):
+    def comparaison_habitants(self) -> None:
+        """
+        Permet de comparer les pays sur base de leur nombre d'habitants.
+
+        PRE : -
+        POST : Place les pays, ainsi que des informations sur ces derniers. Place des numéros représentants l'ordre des
+        pays selon le nombre d'habitants. Le premier est celui ayant le plus grand nombre d'habitants.
+        """
         liste_choix = self.__liste_pays_selectionnes + ["habitants_2020,densite"]
         donnees = user.caracteristique_pays(liste_choix)
         self.quadrillage()
@@ -348,7 +355,14 @@ class Graphique:
                                                              self.__pays_densite, self.__numero_place]
             indice += 1
 
-    def comparaison_superficie(self):
+    def comparaison_superficie(self) -> None:
+        """
+        Permet de comparer les pays sur base de leur superficie.
+
+        PRE : -
+        POST : Place les pays, ainsi que des informations sur ces derniers. Place des numéros représentants l'ordre des
+        pays selon leur superficie. Le premier est celui ayant le plus grand nombre de km².
+        """
         liste_choix = self.__liste_pays_selectionnes + ["superficie,densite"]
         donnees = user.caracteristique_pays(liste_choix)
         self.quadrillage()
@@ -378,12 +392,16 @@ class Graphique:
                                                              self.__pays_densite, self.__numero_place]
             indice += 1
 
-    def comparaison_distance(self):
+    def comparaison_distance(self) -> None:
+        """
+        Permet de comparer les coordonnées des différents pays ainsi que la distance de chaque pays entre eux.
+
+        PRE : -
+        POST : Place les pays, ainsi que des informations sur ces derniers (dont la distance avec les autres pays).
+        """
         liste_choix = self.__liste_pays_selectionnes + ["coordonnee"]
         donnees = user.caracteristique_pays(liste_choix)
         self.quadrillage()
-
-        podium = user.tri(donnees, "info")
 
         indice = 1
         for id in donnees:
@@ -418,81 +436,57 @@ class Graphique:
             self.__liste_widgets_pays_compare[indice - 1] = [self.__titre_pays, self.__pays_donnees, sous_liste]
             indice += 1
 
-    def quadrillage(self):
+    def quadrillage(self) -> None:
+        """
+        Permet de placer un quadrillage sur l'écran (écran divisé en 4 parties égales).
+
+        PRE : -
+        POST : Place 2 tirets noir épais au centre de la fenêtre. L'un est placé horizontalement, l'autre verticalement,
+        et ils traversent tous deux la fenêtre.
+        """
         self.__dessin = tk.Canvas(self.__racine, bg=c_bg_principal, height=700, width=725)
         self.__dessin.place(x=0, y=0)
         self.__dessin.create_line(2, 350, 727, 350, fill="black", width=4)
         self.__dessin.create_line(362, 2, 362, 702, fill="black", width=4)
 
-    def emplacement_podium(self, position, x, y):
+    def emplacement_podium(self, position: int, x: int, y: int) -> tk.Label:
+        """
+        Permet de créer et placer le numéro du podium du pays.
+
+        PRE : 'position' représente la place sur le podium du pays. 'x' est la coordonnée x du titre du pays. 'y' est
+        la coordonnée y du titre du pays.
+        POST : Crée et place le numéro du pays dans le coin inférieur droit, et retourne le widget (pour pouvoir le
+        supprimer le moment nécessaire).
+        """
         numero_place = tk.Label(self.__racine, text=str(position), height=1, width=2, bg=c_bouton_principal,
                                 fg=c_ecriture, font=('Helvitiva', 20), anchor='center', borderwidth=5, relief="ridge")
         numero_place.place(x=x + 186, y=y + 294)
         return numero_place
 
-    def creer_pays(self):
+    def creer_pays(self) -> None:
+        """
+        Permet de placer les champs qui recevront les informations du pays à créer.
+
+        PRE : -
+        POST : Créer les différents champs ainsi que le bouton permettant d'ajouter le pays à la DB tcla.db.
+        """
         self.remise_a_zero()
 
-        #################################
-        self.__ajout_pays_id_entry = tk.Entry(show=None, textvariable="1", font=police_base, width=15)
-        self.__ajout_pays_id_label = tk.Label(self.__racine, text="Entrez le code ISO\n3166-1 alpha-2 du pays : ",
-                                              height=2, width=21, bg=c_bg_principal, fg=c_ecriture,
-                                              font=('Helvitiva', 13), anchor='w', justify="left")
-        self.__ajout_pays_id_entry.place(x=350, y=150)
-        self.__ajout_pays_id_label.place(x=50, y=150)
-        #################################
+        liste = [["Entrez le code ISO\n3166-1 alpha-2 du pays : ", 21], ["Entrez le nom du pays : ", 21],
+                 ["Entrez les coordonnées de la\ncapitale du pays : ", 24],
+                 ["Entrez le nombre d'habitants\ndu pays en 2020 : ", 23],
+                 ["Entrez la superficie du\npays (en km²) : ", 21], ["Entrez la densité du pays\n(en hab/km²): ", 21]]
 
-        #################################
-        self.__ajout_pays_nom_entry = tk.Entry(show=None, textvariable="2", font=police_base, width=15)
-        self.__ajout_pays_nom_label = tk.Label(self.__racine, text="Entrez le nom du pays : ", height=2, width=21,
-                                               bg=c_bg_principal, fg=c_ecriture, font=('Helvitiva', 13), anchor='w')
-        self.__ajout_pays_nom_entry.place(x=350, y=220)
-        self.__ajout_pays_nom_label.place(x=50, y=220)
-        #################################
-
-        #################################
-        self.__ajout_pays_coo_entry = tk.Entry(show=None, textvariable="3", font=police_base, width=15)
-        self.__ajout_pays_coo_label = tk.Label(self.__racine, text="Entrez les coordonnées de la\ncapitale du pays : ",
-                                               height=2, width=24, bg=c_bg_principal, fg=c_ecriture, anchor='w',
-                                               font=('Helvitiva', 13), justify="left")
-        self.__ajout_pays_coo_entry.place(x=350, y=290)
-        self.__ajout_pays_coo_label.place(x=50, y=290)
-        #################################
-
-        #################################
-        self.__ajout_pays_hab_entry = tk.Entry(show=None, textvariable="4", font=police_base, width=15)
-        self.__ajout_pays_hab_label = tk.Label(self.__racine, text="Entrez le nombre d'habitants\ndu pays en 2020 : ",
-                                               height=2, width=23, bg=c_bg_principal, fg=c_ecriture, anchor='w',
-                                               font=('Helvitiva', 13), justify="left")
-        self.__ajout_pays_hab_entry.place(x=350, y=360)
-        self.__ajout_pays_hab_label.place(x=50, y=360)
-        #################################
-
-        #################################
-        self.__ajout_pays_sup_entry = tk.Entry(show=None, textvariable="test", font=police_base, width=15)
-        self.__ajout_pays_sup_label = tk.Label(self.__racine, text="Entrez la superficie du\npays (en km²) : ",
-                                               height=2,
-                                               width=21, bg=c_bg_principal, fg=c_ecriture, font=('Helvitiva', 13),
-                                               anchor='w', justify="left")
-        self.__ajout_pays_sup_entry.place(x=350, y=430)
-        self.__ajout_pays_sup_label.place(x=50, y=430)
-        #################################
-
-        #################################
-        self.__ajout_pays_dens_entry = tk.Entry(show=None, textvariable="5", font=police_base, width=15)
-        self.__ajout_pays_dens_label = tk.Label(self.__racine, text="Entrez la densité du pays\n(en hab/km²): ",
-                                                height=2, width=21, bg=c_bg_principal, fg=c_ecriture, anchor='w',
-                                                font=('Helvitiva', 13), justify="left")
-        self.__ajout_pays_dens_entry.place(x=350, y=500)
-        self.__ajout_pays_dens_label.place(x=50, y=500)
-        #################################
-
-        self.__liste_info_nv_pays = [[self.__ajout_pays_id_entry, self.__ajout_pays_id_label],
-                                     [self.__ajout_pays_nom_entry, self.__ajout_pays_nom_label],
-                                     [self.__ajout_pays_coo_entry, self.__ajout_pays_coo_label],
-                                     [self.__ajout_pays_hab_entry, self.__ajout_pays_hab_label],
-                                     [self.__ajout_pays_sup_entry, self.__ajout_pays_sup_label],
-                                     [self.__ajout_pays_dens_entry, self.__ajout_pays_dens_label]]
+        index = 0
+        for champs in liste:
+            self.__ajout_pays_info_entry = tk.Entry(show=None, textvariable=str(index), font=police_base, width=15)
+            self.__ajout_pays_info_label = tk.Label(self.__racine, text=champs[0], height=2, width=champs[1],
+                                                    bg=c_bg_principal, fg=c_ecriture, font=('Helvitiva', 13),
+                                                    anchor='w', justify="left")
+            self.__ajout_pays_info_entry.place(x=350, y=150 + index * 70)
+            self.__ajout_pays_info_label.place(x=50, y=150 + index * 70)
+            self.__liste_info_nv_pays[index] = [self.__ajout_pays_info_entry, self.__ajout_pays_info_label]
+            index += 1
 
         self.__bouton_ajouter_pays = tk.Button(self.__racine, text="Ajouter", height=1, width=10, bg=c_bouton_principal,
                                                fg=c_ecriture, bd=1, activebackground=c_ecriture, font=police_base,
@@ -500,95 +494,104 @@ class Graphique:
                                                command=lambda: self.creation_pays())
         self.__bouton_ajouter_pays.place(x=510, y=580)
 
-    def creation_pays(self):
+    def creation_pays(self) -> None:
+        """
+        Permet de vérifier les informations du nouveau pays ajoutées par l'utilisateur et d'ajouter le pays.
+
+        PRE : -
+        POST : Si les informations respectent les conventions, le pays est ajouté. Sinon des messages d'explications
+        sont placés près des erreurs commises. Si un information respecte la convention, le carré à côté est vert.
+        Sinon le carré est rouge.
+        """
         for carre in self.__liste_carre_nv_pays:
             for info in carre:
                 info.destroy()
 
         nbr_carres_corrects = 0
+
         ##
-        if self.__ajout_pays_id_entry.get().isalpha() and self.__ajout_pays_id_entry.get().upper() not in \
-                user.tous_pays() and len(self.__ajout_pays_id_entry.get()) == 2:
-            self.__ajout_pays_id_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                   highlightthickness=0, bg="green")
+        if self.__liste_info_nv_pays[0][0].get().isalpha() and self.__liste_info_nv_pays[0][0].get().upper() not in \
+                user.tous_pays() and len(self.__liste_info_nv_pays[0][0].get()) == 2:
+            couleur = "green"
             nbr_carres_corrects += 1
         else:
-            self.__ajout_pays_id_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                   highlightthickness=0, bg="red")
-            self.__explication_pays_id = tk.Label(self.__racine, text="Format attendu : BE",
-                                                  height=1, width=15, bg=c_bg_principal, fg="red", anchor='w',
-                                                  font=('Helvitiva', 11), justify="left")
+            couleur = "red"
+            self.__explication_pays_id = tk.Label(self.__racine, text="Format attendu : BE", height=1, width=15,
+                                                  bg=c_bg_principal, fg="red", anchor='w', font=('Helvitiva', 11),
+                                                  justify="left")
             self.__explication_pays_id.place(x=50, y=190)
+        self.__ajout_pays_id_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0, highlightthickness=0,
+                                               bg=couleur)
         self.__ajout_pays_id_valid.place(x=540, y=157)
 
         ##
-        if "".join(re.split("[' -]", self.__ajout_pays_nom_entry.get())).isalpha():
-            self.__ajout_pays_nom_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="green")
+        if "".join(re.split("[' -]", self.__liste_info_nv_pays[1][0].get())).isalpha():
+            couleur = "green"
             nbr_carres_corrects += 1
         else:
-            self.__ajout_pays_nom_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="red")
+            couleur = "red"
             self.__explication_pays_nom = tk.Label(self.__racine, text="Format attendu : Belgique",
                                                    height=1, width=19, bg=c_bg_principal, fg="red", anchor='w',
                                                    font=('Helvitiva', 11), justify="left")
             self.__explication_pays_nom.place(x=50, y=250)
+        self.__ajout_pays_nom_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0, highlightthickness=0,
+                                                bg=couleur)
         self.__ajout_pays_nom_valid.place(x=540, y=227)
 
         #
-        if user.verif_coordonnees(self.__ajout_pays_coo_entry.get()):
-            self.__ajout_pays_coo_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="green")
+        if user.verif_coordonnees(self.__liste_info_nv_pays[2][0].get()):
+            couleur = "green"
             nbr_carres_corrects += 1
         else:
-            self.__ajout_pays_coo_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="red")
+            couleur = "red"
             self.__explication_pays_coo = tk.Label(self.__racine, text="Format attendu : 50 51 N 4 21 E",
                                                    height=1, width=23, bg=c_bg_principal, fg="red", anchor='w',
                                                    font=('Helvitiva', 11), justify="left")
             self.__explication_pays_coo.place(x=50, y=330)
+        self.__ajout_pays_coo_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0, highlightthickness=0,
+                                                bg=couleur)
         self.__ajout_pays_coo_valid.place(x=540, y=297)
 
         #
-        if self.__ajout_pays_hab_entry.get().isnumeric():
-            self.__ajout_pays_hab_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="green")
+        if self.__liste_info_nv_pays[3][0].get().isnumeric():
+            couleur = "green"
             nbr_carres_corrects += 1
         else:
-            self.__ajout_pays_hab_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="red")
+            couleur = "red"
             self.__explication_pays_hab = tk.Label(self.__racine, text="Format attendu : 11476279",
                                                    height=1, width=20, bg=c_bg_principal, fg="red", anchor='w',
                                                    font=('Helvitiva', 11), justify="left")
             self.__explication_pays_hab.place(x=50, y=400)
+        self.__ajout_pays_hab_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0, highlightthickness=0,
+                                                bg=couleur)
         self.__ajout_pays_hab_valid.place(x=540, y=367)
 
         #
-        if self.__ajout_pays_sup_entry.get().isnumeric():
-            self.__ajout_pays_sup_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="green")
+        if self.__liste_info_nv_pays[4][0].get().isnumeric():
+            couleur = "green"
             nbr_carres_corrects += 1
         else:
-            self.__ajout_pays_sup_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                    highlightthickness=0, bg="red")
+            couleur = "red"
             self.__explication_pays_sup = tk.Label(self.__racine, text="Format attendu : 30688",
                                                    height=1, width=17, bg=c_bg_principal, fg="red", anchor='w',
                                                    font=('Helvitiva', 11), justify="left")
             self.__explication_pays_sup.place(x=50, y=470)
+        self.__ajout_pays_sup_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0, highlightthickness=0,
+                                                bg=couleur)
         self.__ajout_pays_sup_valid.place(x=540, y=437)
 
         #
-        if self.__ajout_pays_dens_entry.get().isnumeric():
-            self.__ajout_pays_dens_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                     highlightthickness=0, bg="green")
+        if self.__liste_info_nv_pays[5][0].get().isnumeric():
+            couleur = "green"
             nbr_carres_corrects += 1
         else:
-            self.__ajout_pays_dens_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
-                                                     highlightthickness=0, bg="red")
+            couleur = "red"
             self.__explication_pays_dens = tk.Label(self.__racine, text="Format attendu : 374",
                                                     height=1, width=15, bg=c_bg_principal, fg="red", anchor='w',
                                                     font=('Helvitiva', 11), justify="left")
             self.__explication_pays_dens.place(x=50, y=540)
+        self.__ajout_pays_dens_valid = tk.Canvas(self.__racine, width=10, height=10, borderwidth=0,
+                                                 highlightthickness=0, bg=couleur)
         self.__ajout_pays_dens_valid.place(x=540, y=507)
 
         self.__liste_carre_nv_pays = [[self.__ajout_pays_id_valid, self.__explication_pays_id],
@@ -599,30 +602,63 @@ class Graphique:
                                       [self.__ajout_pays_dens_valid, self.__explication_pays_dens]]
 
         if nbr_carres_corrects == 6:
-            liste_coo = self.__ajout_pays_coo_entry.get().split()
+            liste_coo = self.__liste_info_nv_pays[2][0].get().split()
             string = liste_coo[0] + "° " + liste_coo[1] + "' " + liste_coo[2] + ", " + liste_coo[3] + "° " + \
                      liste_coo[4] + "' " + liste_coo[5]
-            nom_pays = user.format_nom_pays(self.__ajout_pays_nom_entry.get())
-            self.ajouter_pays(self.__ajout_pays_id_entry.get().upper(), nom_pays, string,
-                              self.__ajout_pays_hab_entry.get(), self.__ajout_pays_sup_entry.get(),
-                              self.__ajout_pays_dens_entry.get())
+            nom_pays = user.format_nom_pays(self.__liste_info_nv_pays[1][0].get())
+            self.ajouter_pays(self.__liste_info_nv_pays[0][0].get().upper(), nom_pays, string,
+                              self.__liste_info_nv_pays[3][0].get(), self.__liste_info_nv_pays[4][0].get(),
+                              self.__liste_info_nv_pays[5][0].get())
 
-    def ajouter_pays(self, id, nom, coo, hab, sup, dens):
+    def ajouter_pays(self, id: str, nom: str, coo: str, hab: int, sup: int, dens: float) -> None:
+        """
+        Permet d'appeler une fonction qui ajoutera les nouvelles données du nouveau pays dans la DB tlca.db
+
+        PRE : 'id' est une string représente le code code ISO 3166-1 alpha-2 du pays. 'nom' est une string
+        représentant le nom du pays. 'coo' est une string représentant les coordonnées de la capitale du pays. 'hab'
+        est un entier représentant le nombre d'habitants du pays en 2020. 'sup' est un entier représentant la superficie
+        totale du pays. 'dens' est un nombre flotant représentant la densité du pays.
+        POST : Appelle la fonction adéquate pour rajouter les données.
+        """
         user.ajout_pays_client(id, nom, coo, hab, sup, dens)
 
-    def menu_principal(self):
+    def menu_principal(self) -> None:
+        """
+        Permet d'aller au menu principal.
+
+        PRE : -
+        POST : Appelle une fonction supprimant tous les widgets puis la fonction représentant le menu principal.
+        """
         self.remise_a_zero()
         self.initialisation()
 
-    def menu_comparer(self):
+    def menu_comparer(self) -> None:
+        """
+        Permet d'aller au menu de comparaison de pays.
+
+        PRE : -
+        POST : Appelle une fonction supprimant tous les widgets puis la fonction représentant le menu comparer.
+        """
         self.remise_a_zero()
         self.comparer_pays()
 
-    def menu_modifier(self):
+    def menu_modifier(self) -> None:
+        """
+        Permet d'aller au menu d'ajout d'un pays.
+
+        PRE : -
+        POST : Appelle une fonction supprimant tous les widgets puis la fonction représentant le menu ajouter.
+        """
         self.remise_a_zero()
         self.creer_pays()
 
-    def remise_a_zero(self):
+    def remise_a_zero(self) -> None:
+        """
+        Supprime la plupart des widgets et des listes.
+
+        PRE : -
+        POST : Supprime tous les widgets et réinitialise les listes nécessaires.
+        """
         # Widget menu
         self.__button_menu_comparaison.destroy()
         self.__button_ajouter_pays.destroy()
@@ -638,12 +674,15 @@ class Graphique:
             widget.destroy()
         self.__lb.destroy()
         self.__aucun_pays.destroy()
-
         for widget in self.__liste_type_comparaison:
             widget.destroy()
         for widget in self.__liste_widgets_pays_compare:
             for element in widget:
-                element.destroy()
+                if type(element) == list:
+                    for km in element:
+                        km.destroy()
+                else:
+                    element.destroy()
         self.__dessin.destroy()
         self.__liste_pays_selectionnes = ["", "", "", ""]
 
