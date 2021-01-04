@@ -86,6 +86,7 @@ def suppression_tableau(nom_tableau: str) -> None:
     """
     connexion = sqlite3.connect("../db/tlca.db")
 
+    connexion.commit()
     connexion.execute('''DROP TABLE ''' + nom_tableau)
 
 # creation_db()
